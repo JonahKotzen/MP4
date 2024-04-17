@@ -1,0 +1,70 @@
+---
+title: "MP4"
+author: "Jonah Kotzen, Ava Skogstrom, Conor Booth"
+date: "2024-04-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+```
+
+```{r read average, include=FALSE}
+alcidae <- read.table("Booth_Kotzen_Skogstrom_alcid.txt", sep = ",", header = TRUE)
+laridae <- read.table("Booth_Kotzen_Skogstrom_larid.txt", sep = ",", header = TRUE)
+
+```
+
+# Comparison of Lift over Time b/w Specimens
+
+```{r graph 1, include=TRUE}
+
+ggplot() +
+  geom_line(data = alcidae, aes(x = s, y = lift, color = "Alcidae Lift"), size = 1) +
+  geom_line(data = laridae, aes(x = s, y = lift, color = "Laridae Lift"), size = 1) +
+  labs(title = "Comparison of Lift over Time", x = "Time (s)", y = "Lift Force (N)") +
+  scale_color_manual(values = c("Alcidae Lift" = "blue", "Laridae Lift" = "green")) +
+  theme_minimal()
+
+```
+
+# Comparison of Drag over Time b/w Specimens
+
+```{r graph 2, include=TRUE}
+
+ggplot() +
+  geom_line(data = alcidae, aes(x = s, y = drag, color = "Alcidae Drag"), size = 1) +
+  geom_line(data = laridae, aes(x = s, y = drag, color = "Laridae Drag"), size = 1, linetype = "dashed") +
+  labs(title = "Comparison of Drag over Time", x = "Time (s)", y = "Drag Force (N)") +
+  scale_color_manual(values = c("Alcidae Drag" = "red", "Laridae Drag" = "purple")) +
+  theme_minimal()
+```
+
+# Calculations
+
+```{r calculations1, include=FALSE}
+# Calculate averages for Alcidae
+average_lift_alcidae <- mean(alcidae$lift)
+average_drag_alcidae <- mean(alcidae$drag)
+
+# Calculate averages for Laridae
+average_lift_laridae <- mean(laridae$lift)
+average_drag_laridae <- mean(laridae$drag)
+
+# Create a tibble with average lift and drag for both bird families
+averages_tibble <- tibble(
+  Bird_Family = c("Alcidae", "Laridae"),
+  Average_Lift = c(average_lift_alcidae, average_lift_laridae),
+  Average_Drag = c(average_drag_alcidae, average_drag_laridae)
+)
+```
+
+```{r calc2, include=TRUE}
+averages_tibble
+```
+
+# Interpretations
+
+# References
