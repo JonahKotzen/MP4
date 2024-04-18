@@ -9,26 +9,29 @@ output: html_document
 library(tidyverse)
 library(ggplot2)
 library(tibble)
+library(gridExtra)
 ```
 
 ```{r read average, include=FALSE}
-alcidae <- read.table("Booth_Kotzen_Skogstrom_alcid.txt", sep = ",", header = TRUE)
+alcidae <- read.table("Booth_Kotzen_Skogstrom_alcid_updated.txt", sep = ",", header = TRUE)
 laridae <- read.table("Booth_Kotzen_Skogstrom_larid.txt", sep = ",", header = TRUE)
 
 ```
 
-# Total Wing Area (A)
+# Measurements
+
+### Total Wing Area (A)
 We used the ruler and shape info features in SketchUp to determine A
 A = chord (c) *x* span (s) (an approximation)
 Laridae: c = 20.6623 mm, s = 60.1978 mm, A = 1243.825 sq mm
 Alcidae: c = 42 mm, s = 52 mm, A = 2184 sq mm
 
-# Span (S)
+### Span (S)
 We used the ruler and shape info features in SketchUp to determine S
 Laridae: 60.1978 mm
 Alcidae: 52 mm
 
-# Wetted Area (Aw)
+### Wetted Area (Aw)
 We used the ruler and shape info features in SketchUp to determine Aw
 The wetted area is surface area of the wing in contact with the air flow
 Laridae: 165.368118 sq mm
@@ -45,54 +48,6 @@ wing_data <- tibble(
 )
 
 ```
-
-# Compiled Wing Data into Tibble
-
-```{r wing, include=TRUE}
-wing_data
-```
-
-# Comparison of Wing Areas b/w Specimens
-
-```{r graph 0, include=TRUE}
-ggplot(wing_data, aes(x = Bird_Family)) +
-  geom_bar(aes(y = Total_Wing_Area_sq_mm, fill = "Total Wing Area"), stat = "identity", position = "dodge") +
-  geom_bar(aes(y = Wetted_Area_sq_mm, fill = "Wetted Area"), stat = "identity", position = "dodge") +
-  labs(title = "Comparison of Wing Areas",
-       x = "Bird Family",
-       y = "Area (sq mm)",
-       fill = "Area Type") +
-  theme_minimal()
-
-```
-
-
-# Comparison of Lift over Time b/w Specimens
-
-```{r graph 1, include=TRUE}
-
-ggplot() +
-  geom_line(data = alcidae, aes(x = s, y = lift, color = "Alcidae Lift"), size = 1) +
-  geom_line(data = laridae, aes(x = s, y = lift, color = "Laridae Lift"), size = 1) +
-  labs(title = "Comparison of Lift over Time", x = "Time (s)", y = "Lift Force (N)") +
-  scale_color_manual(values = c("Alcidae Lift" = "blue", "Laridae Lift" = "green")) +
-  theme_minimal()
-
-```
-
-# Comparison of Drag over Time b/w Specimens
-
-```{r graph 2, include=TRUE}
-
-ggplot() +
-  geom_line(data = alcidae, aes(x = s, y = drag, color = "Alcidae Drag"), size = 1) +
-  geom_line(data = laridae, aes(x = s, y = drag, color = "Laridae Drag"), size = 1, linetype = "dashed") +
-  labs(title = "Comparison of Drag over Time", x = "Time (s)", y = "Drag Force (N)") +
-  scale_color_manual(values = c("Alcidae Drag" = "red", "Laridae Drag" = "purple")) +
-  theme_minimal()
-```
-
-# Calculations
 
 ```{r calculations1, include=FALSE}
 # Calculate averages for Alcidae
@@ -111,13 +66,7 @@ averages_tibble <- tibble(
 )
 ```
 
-```{r calc2, include=TRUE}
-averages_tibble
-```
-
-# Calculate Coefficients and Perform Comparative Analysis
-
-```{r comparative, include=TRUE}
+```{r comparative, include=FALSE}
 
 # Join the data using Bird_Family as the key
 complete_data <- left_join(wing_data, averages_tibble, by = "Bird_Family")
@@ -137,15 +86,78 @@ complete_data$L_to_D_ratio <- complete_data$C_L / complete_data$C_D
 # Calculate the aspect ratio (AR)
 complete_data$AR <- (complete_data$Span_mm / 1000)^2 / (complete_data$Wetted_Area_sq_mm / 1e6)  # Convert mm to m for S and Aw
 
-# Print the updated tibble with all calculations
-print(complete_data)
 
 ```
-```{r visual, include=TRUE}
-# Load necessary libraries
-library(ggplot2)
-library(gridExtra)
 
+# Compiled Tibbles
+
+### Compiled Wing Data into Tibble
+
+```{r wing, include=TRUE}
+wing_data
+```
+
+
+### Compiled Lift and Drag Data into Tibble
+
+
+```{r calc2, include=TRUE}
+averages_tibble
+```
+
+### Compiled Coefficients & Total Data into Tibble
+
+```{r include=TRUE}
+complete_data
+
+```
+
+# Graphs
+
+## Comparison of Wing Areas b/w Specimens
+
+```{r graph 0, include=TRUE}
+ggplot(wing_data, aes(x = Bird_Family)) +
+  geom_bar(aes(y = Total_Wing_Area_sq_mm, fill = "Total Wing Area"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = Wetted_Area_sq_mm, fill = "Wetted Area"), stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Wing Areas",
+       x = "Bird Family",
+       y = "Area (sq mm)",
+       fill = "Area Type") +
+  theme_minimal()
+
+```
+
+
+## Comparison of Lift over Time b/w Specimens
+
+```{r graph 1, include=TRUE}
+
+ggplot() +
+  geom_line(data = alcidae, aes(x = s, y = lift, color = "Alcidae Lift"), size = 1) +
+  geom_line(data = laridae, aes(x = s, y = lift, color = "Laridae Lift"), size = 1) +
+  labs(title = "Comparison of Lift over Time", x = "Time (s)", y = "Lift Force (N)") +
+  scale_color_manual(values = c("Alcidae Lift" = "blue", "Laridae Lift" = "green")) +
+  theme_minimal()
+
+```
+
+## Comparison of Drag over Time b/w Specimens
+
+```{r graph 2, include=TRUE}
+
+ggplot() +
+  geom_line(data = alcidae, aes(x = s, y = drag, color = "Alcidae Drag"), size = 1) +
+  geom_line(data = laridae, aes(x = s, y = drag, color = "Laridae Drag"), size = 1, linetype = "dashed") +
+  labs(title = "Comparison of Drag over Time", x = "Time (s)", y = "Drag Force (N)") +
+  scale_color_manual(values = c("Alcidae Drag" = "red", "Laridae Drag" = "purple")) +
+  theme_minimal()
+```
+
+## Complete Data Coefficient Graphs b/w Specimens
+
+
+```{r visual, include=FALSE}
 # Plot for Drag Coefficient
 p1 <- ggplot(complete_data, aes(x = Bird_Family, y = C_D, fill = Bird_Family)) +
   geom_col() +
@@ -173,7 +185,10 @@ p4 <- ggplot(complete_data, aes(x = Bird_Family, y = AR, fill = Bird_Family)) +
   labs(title = "Aspect Ratio (AR)", y = "Aspect Ratio") +
   theme_minimal() +
   scale_fill_brewer(palette = "Set1")
+```
 
+
+```{r grid, include=TRUE}
 # Arrange the plots in a grid
 grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
 
