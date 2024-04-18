@@ -17,6 +17,21 @@ laridae <- read.table("Booth_Kotzen_Skogstrom_larid.txt", sep = ",", header = TR
 
 ```
 
+# Total Wing Area (A)
+We used the ruler and shape info features in SketchUp to determine A
+Laridae: 
+Alcidae:
+
+# Span (S)
+We used the ruler and shape info features in SketchUp to determine S
+Laridae: 
+Alcidae:
+
+# Wetted Area (Aw)
+We used the ruler and shape info features in SketchUp to determine Aw
+Laridae: 
+Alcidae:
+
 # Comparison of Lift over Time b/w Specimens
 
 ```{r graph 1, include=TRUE}
