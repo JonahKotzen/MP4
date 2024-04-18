@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(ggplot2)
-
+library(tibble)
 ```
 
 ```{r read average, include=FALSE}
@@ -33,6 +33,39 @@ We used the ruler and shape info features in SketchUp to determine Aw
 The wetted area is surface area of the wing in contact with the air flow
 Laridae: 165.368118 sq mm
 Alcidae: 104 sq mm
+
+```{r calc, include=FALSE}
+
+wing_data <- tibble(
+  Bird_Family = c("Laridae", "Alcidae"),
+  Chord_mm = c(20.6623, 42),
+  Span_mm = c(60.1978, 52),
+  Total_Wing_Area_sq_mm = c(1243.825, 2184),
+  Wetted_Area_sq_mm = c(165.368118, 104)
+)
+
+```
+
+# Compiled Wing Data into Tibble
+
+```{r wing, include=TRUE}
+wing_data
+```
+
+# Comparison of Wing Areas b/w Specimens
+
+```{r graph 0, include=TRUE}
+ggplot(wing_data, aes(x = Bird_Family)) +
+  geom_bar(aes(y = Total_Wing_Area_sq_mm, fill = "Total Wing Area"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = Wetted_Area_sq_mm, fill = "Wetted Area"), stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Wing Areas",
+       x = "Bird Family",
+       y = "Area (sq mm)",
+       fill = "Area Type") +
+  theme_minimal()
+
+```
+
 
 # Comparison of Lift over Time b/w Specimens
 
