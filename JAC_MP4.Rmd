@@ -115,6 +115,71 @@ averages_tibble <- tibble(
 averages_tibble
 ```
 
+# Calculate Coefficients and Perform Comparative Analysis
+
+```{r comparative, include=TRUE}
+
+# Join the data using Bird_Family as the key
+complete_data <- left_join(wing_data, averages_tibble, by = "Bird_Family")
+
+# Now calculate the coefficients and other values needed
+# Using fluid density for water (1000 kg/m^3) and fluid velocity (16 cm/s converted to m/s)
+fluid_density <- 1000
+fluid_velocity <- 16 / 100  # cm/s to m/s
+
+# Calculate drag and lift coefficients
+complete_data$C_D <- complete_data$Average_Drag / (0.5 * fluid_density * fluid_velocity^2 * (complete_data$Total_Wing_Area_sq_mm / 1e6))  # Convert mm^2 to m^2
+complete_data$C_L <- complete_data$Average_Lift / (0.5 * fluid_density * fluid_velocity^2 * (complete_data$Total_Wing_Area_sq_mm / 1e6))
+
+# Calculate the lift-to-drag ratio
+complete_data$L_to_D_ratio <- complete_data$C_L / complete_data$C_D
+
+# Calculate the aspect ratio (AR)
+complete_data$AR <- (complete_data$Span_mm / 1000)^2 / (complete_data$Wetted_Area_sq_mm / 1e6)  # Convert mm to m for S and Aw
+
+# Print the updated tibble with all calculations
+print(complete_data)
+
+```
+```{r visual, include=TRUE}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Plot for Drag Coefficient
+p1 <- ggplot(complete_data, aes(x = Bird_Family, y = C_D, fill = Bird_Family)) +
+  geom_col() +
+  labs(title = "Drag Coefficient (C_D)", y = "Coefficient of Drag") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Plot for Lift Coefficient
+p2 <- ggplot(complete_data, aes(x = Bird_Family, y = C_L, fill = Bird_Family)) +
+  geom_col() +
+  labs(title = "Lift Coefficient (C_L)", y = "Coefficient of Lift") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Plot for Lift-to-Drag Ratio
+p3 <- ggplot(complete_data, aes(x = Bird_Family, y = L_to_D_ratio, fill = Bird_Family)) +
+  geom_col() +
+  labs(title = "Lift-to-Drag Ratio", y = "L_to_D_ratio") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Plot for Aspect Ratio
+p4 <- ggplot(complete_data, aes(x = Bird_Family, y = AR, fill = Bird_Family)) +
+  geom_col() +
+  labs(title = "Aspect Ratio (AR)", y = "Aspect Ratio") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+
+# Arrange the plots in a grid
+grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
+
+
+```
+
 # Interpretations
 
 # References
