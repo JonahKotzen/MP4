@@ -19,18 +19,20 @@ laridae <- read.table("Booth_Kotzen_Skogstrom_larid.txt", sep = ",", header = TR
 
 # Total Wing Area (A)
 We used the ruler and shape info features in SketchUp to determine A
-Laridae: 
-Alcidae:
+A = chord (c) *x* span (s) (an approximation)
+Laridae: c = 20.6623 mm, s = 60.1978 mm, A = 1243.825 sq mm
+Alcidae: c = 42 mm, s = 52 mm, A = 2184 sq mm
 
 # Span (S)
 We used the ruler and shape info features in SketchUp to determine S
-Laridae: 
-Alcidae:
+Laridae: 60.1978 mm
+Alcidae: 52 mm
 
 # Wetted Area (Aw)
 We used the ruler and shape info features in SketchUp to determine Aw
-Laridae: 
-Alcidae:
+The wetted area is surface area of the wing in contact with the air flow
+Laridae: 165.368118 sq mm
+Alcidae: 104 sq mm
 
 # Comparison of Lift over Time b/w Specimens
 
