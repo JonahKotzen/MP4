@@ -16,7 +16,7 @@ library(gridExtra)
 ```{r read average, include=FALSE}
 alcidae <- read.table("Booth_Kotzen_Skogstrom_alcid_updated.txt", sep = ",", header = TRUE)
 laridae <- read.table("Booth_Kotzen_Skogstrom_larid.txt", sep = ",", header = TRUE)
-
+wing_data <- read.csv("wing_data.csv", header = TRUE, stringsAsFactors = FALSE)
 ```
 
 # Measurements
@@ -40,7 +40,7 @@ Alcidae: 104 sq mm
 
 ```{r calc, include=FALSE}
 
-wing_data <- tibble(
+wing_data_calc <- tibble(
   Bird_Family = c("Laridae", "Alcidae"),
   Chord_mm = c(20.6623, 42),
   Span_mm = c(60.1978, 52),
@@ -70,7 +70,7 @@ averages_tibble <- tibble(
 ```{r comparative, include=FALSE}
 
 # Join the data using Bird_Family as the key
-complete_data <- left_join(wing_data, averages_tibble, by = "Bird_Family")
+complete_data <- left_join(wing_data_calc, averages_tibble, by = "Bird_Family")
 
 # Now calculate the coefficients and other values needed
 # Using fluid density for water (1000 kg/m^3) and fluid velocity (16 cm/s converted to m/s)
@@ -95,7 +95,7 @@ complete_data$AR <- (complete_data$Span_mm / 1000)^2 / (complete_data$Wetted_Are
 ### Compiled Wing Data into Tibble
 
 ```{r wing, include=TRUE}
-wing_data
+wing_data_calc
 ```
 
 
@@ -115,10 +115,23 @@ complete_data
 
 # Graphs
 
+## Class Data Graph 
+
+```{r class, include=TRUE, fig.cap= "This scatter plot with a fitted line and confidence interval shows that, overall, birds with higher aspect ratios tend to have higher lift-to-drag coefficients, suggesting more efficient flight capabilities across species."}
+ggplot(wing_data, aes(x = AR, y = Cl.Cd, color = bird)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +  # Best fit line for all data with CI
+  theme_minimal() +
+  labs(title = "Aspect Ratio vs. Lift-to-Drag Coefficient with Overall Best Fit Line",
+       x = "Aspect Ratio",
+       y = "Lift-to-Drag Coefficient") +
+  scale_color_discrete(name = "Bird Type")
+```
+
 ## Comparison of Wing Areas b/w Specimens
 
 ```{r graph 0, include=TRUE}
-ggplot(wing_data, aes(x = Bird_Family)) +
+ggplot(wing_data_calc, aes(x = Bird_Family)) +
   geom_bar(aes(y = Total_Wing_Area_sq_mm, fill = "Total Wing Area"), stat = "identity", position = "dodge") +
   geom_bar(aes(y = Wetted_Area_sq_mm, fill = "Wetted Area"), stat = "identity", position = "dodge") +
   labs(title = "Comparison of Wing Areas",
